@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<!-- iphone会把一串数字识别为电话号码，点击的时候会提示是否呼叫，屏蔽这功能则把telephone设置为no -->
+		<meta content="telephone=no" name="format-detection" />
+		<!-- iphone的私有标签，默认值为default（白色），可以定为black（黑色）和black-translucent（灰色半透明） -->
+		<meta content="black" name="apple-mobile-web-app-status-bar-style">
+		<!-- iphone设备的是有标签 允许全屏模式浏览，隐藏浏览器导航栏 -->
+		<meta content="yes" name="apple-mobile-web-app-capable" />
+		<title>刮刮卡</title>
+		<style>
+			*{
+				margin:0;
+				padding:0;
+			}
+			#box{
+				width: 100%;
+				height: 200PX;
+				overflow: hidden;
+			}
+			#price{
+				width: 100%;
+				height: 200px;
+				line-height: 200px;
+				background: #E4D236;
+				font-size: 60px;
+				color: #fff;
+				text-align: center;
+			}
+			#canvas{
+				position: absolute;
+				top:0;
+				left:0;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="box">
+			<div id="price">
+				没有奖哦！
+			</div>
+			<canvas id="canvas">
+				您的浏览器不支持。	
+			</canvas>
+		</div>
+		
+		
+		<script type="text/javascript">
+			var canvas=document.getElementById("canvas");
+			var w=window.innerWidth;
+			canvas.width=w;
+			canvas.height=200;
+			//获取canvas上下文（以后操作都在context）
+			if(canvas.getContext("2d")){
+				context = canvas.getContext("2d");
+			}
+			context.fillStyle="#ddd";
+			context.fillRect(0,0,w,200);
+			//开始设置监听事件
+			canvas.addEventListener("touchstart",start,false);
+			canvas.addEventListener("touchmove",move,false);
+			function start(e){
+				var startX=e.touches[0].clientX;//获取触摸鼠标所在x位置
+				var startY=e.touches[0].clientY;
+				context.beginPath(); //开始划线
+				context.lineWidth = 30;//画笔宽度
+				context.lineCap = "round";//画笔线条圆角
+				context.lineJoin = "round";
+				//关键对于图像重叠如何使上层变透明，涉及globalCompositeOperation
+				//黄色是目标，灰色canvas是源。context.globalCompositeOperation ="destination-out";作用是
+				//使下一步绘制的线使源变透明，没有绘制线的地方仍然显示源(线条变成橡皮擦)
+				context.globalCompositeOperation ="destination-out";
+				context.moveTo(startX,startY);//开始划线
+			}
+			function move(e){
+				var moveX=e.touches[0].clientX;//获取触摸鼠标所在x位置
+				var moveY=e.touches[0].clientY;
+				context.lineTo(moveX,moveY);
+				context.stroke();//不要有结束，否则开始和结束会连成一条线
+			}
+			var arr=["奖一个么么","跪搓衣板","跪键盘","睡地板","出去玩","看电影","没有奖励"];
+			var num=Math.round(Math.random()*arr.length);
+			document.getElementById("price").innerHTML=arr[num];
+		</script>
+	</body>
+	
+</html>
